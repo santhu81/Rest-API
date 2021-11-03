@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <style>
+    body {
+      background: rgb(0, 0, 105);
+    }
+
+    .container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .items-list {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .items-list li {
+      width: 45%;
+      background: #fff;
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .items-list li h4 {
+      font-size: 18px;
+    }
+
+    .items-list li img {
+      max-width: 20%;
+    }
+
+    .formWrap {
+      margin: 20px auto 50px;
+      text-align: center;
+    }
+
+    input[type="text"] {
+      width: 50%;
+      border-radius: 5px;
+      padding: 10px;
+      border: none;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="formWrap">
+      <input type="text" placeholder="Search" id="search">
+    </div>
+
+    <ul class="items-list"></ul>
+  </div>
+
+  <script>
+    let characters = []
+    const search = document.getElementById('search')
+    search.addEventListener('keyup', (e) => {
+      let searchTerm = e.target.value.toLowerCase()
+      const filteredCharacter = characters.filter(character => {
+        return (
+          character.name.toLowerCase().includes(searchTerm) || character.gender.toLowerCase().includes(searchTerm)
+        )
+      })
+      displayresult(filteredCharacter)
+    })
+
+    const loadData = async () => {
+      try {
+        const response = await fetch('http://hp-api.herokuapp.com/api/characters')
+        characters = await response.json()
+        displayresult(characters)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    function displayresult(characters) {
+      const itemsList = document.querySelector('.items-list')
+      const htmlString = characters.map(character => {
+        return `
+          <li>
+            <div class="info">
+              <h4>${character.name}</h4>
+              <p>${character.gender}</p>
+            </div>
+            <img src="${character.image}" alt="${character.name}">
+          </li>
+        `
+      }).join('')
+
+      console.log(htmlString)
+
+      itemsList.innerHTML = htmlString
+    }
+
+    loadData()
+  </script>
+</body>
+
+</html>
